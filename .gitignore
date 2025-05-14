@@ -4,3 +4,7 @@ logs/**
 .snakemake
 .snakemake/**
 .test/results/*
+tests/logs/
+tests/predictions/
+tests/work/
+*.pyc

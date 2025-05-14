@@ -28,7 +28,7 @@ snakemake --dry-run
 To run the workflow with test files using **conda**:
 
 ```bash
-snakemake --cores 2 --sdm conda --directory .test
+snakemake -F --cores 1 --resources mem_mb=1000 --configfile tests/config.yml --use-conda
 ```
 
 ## References

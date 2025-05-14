@@ -1,8 +1,50 @@
-samplesheet: ".test/config/samples.tsv"
+# config/config.yaml
 
-get_genome:
-  ncbi_ftp: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz
+# Path to VCF file with variants to be processed
+input_vcf: .
 
-simulate_reads:
-  read_length: 100
-  read_number: 10000
+# Directory where all intermediate outputs (e.g. feature files) will be written
+work_dir: work
+
+# Directory where all final predictions will be written
+out_dir: predictions
+
+# Directory where all logs will be written
+log_dir: logs
+
+# Which organs to process. Override this list per-run as needed.
+# If you want to process all organs, set this to "all".
+organs:
+  - liver
+  - heart
+  - brain
+  - lung
+  - kidney
+  - muscle
+  # … add or remove organ names as needed …
+
+# Approximate memory (in MB) each organ-specific feature extraction / prediction job will require.
+memory_extract_generic_mb: 10000
+memory_extract_organsp_mb: 10000
+memory_predict_organsp_mb: 10000
+
+
+###---CONFIGS BELOW ARE NOT RUN-SPECIFIC. DO NOT CHANGE ONCE SET UP FOR A NEW MACHINE---###
+
+# Directory from which regulome_search_organ.py must be run
+gds_dir: /mnt/md0/genomic-data-service
+
+# Directory from which run_sei.py must be run
+sei_dir: /nfs/boylelab_turbo/rintsen/Sei
+
+# Path to bigwigs
+dnase_sig_path: /mnt/md0/DNase_quantile/data_results/all
+chip_sig_path: /mnt/md0/ChIP_quantile/data_results
+organsp_dnase_sig_path: /mnt/md0/DNase_quantile/data_results/organ_sp
+
+# Resources
+organ_list_path: resources/organ_list.txt
+total_num_path: resources/total_num/
+
+# Directory containing pickled model files for TLand, TLand-light, and TLand-lightest
+models_path: /nfs/boylelab_turbo/rintsen/TLand_resources/models

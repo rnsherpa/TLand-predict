@@ -11,8 +11,8 @@ configfile: "config/config.yml"
 
 # load rules
 # -----------------------------------------------------
-include: "rules/common.smk"
-include: "rules/process_reads.smk"
+include: "rules/extract_features.smk"
+include: "rules/predict.smk"
 
 
 # optional messages, log and error handling
@@ -33,5 +33,5 @@ onerror:
 # -----------------------------------------------------
 rule all:
     input:
-        "results/multiqc/multiqc_report.html",
+        expand(config["out_dir"] + "/TLand_scores.{organ}.tsv.gz", organ=config["organs"])
     default_target: True
