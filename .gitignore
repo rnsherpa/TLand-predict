@@ -3,8 +3,6 @@ resources/**
 logs/**
 .snakemake
 .snakemake/**
-.test/results/*
-tests/logs/
-tests/predictions/
-tests/work/
+example/all_organs/**
+example/brain_heart/**
 *.pyc
