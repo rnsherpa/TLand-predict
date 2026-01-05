@@ -1,3 +1,7 @@
+import os
+import json
+import pandas as pd
+
 # Main entrypoint of the workflow.
 # Please follow the best practices:
 # https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
@@ -8,6 +12,27 @@
 # -----------------------------------------------------
 configfile: "config/config.yml"
 
+BASE = os.path.abspath(config["base_dir"]) # Base directory for ALL runs
+
+runs_df = pd.read_csv(config["runs_table"], sep="\t")
+
+RUNS = runs_df["run_id"].tolist()
+
+ORGAN_MAPPING_PATH = config["organ_mapping_json"]
+with open(ORGAN_MAPPING_PATH) as fh:
+    organ_mapping = json.load(fh)
+    ALL_ORGANS = list(organ_mapping.keys())
+
+RUN_PARAMS = {
+    row.run_id: {
+        "VCF"     : row.input_vcf,
+        "ORGANS"  : (
+            ALL_ORGANS if row.organs.strip().lower() == "all"
+            else [o.strip() for o in row.organs.split(";")]
+        ),
+    }
+    for _, row in runs_df.iterrows()
+}
 
 # load rules
 # -----------------------------------------------------
@@ -33,5 +58,13 @@ onerror:
 # -----------------------------------------------------
 rule all:
     input:
-        expand(config["out_dir"] + "/TLand_scores.{organ}.tsv.gz", organ=config["organs"])
+        [
+            os.path.join(
+                BASE,
+                run,
+                f"predictions/TLand_scores.{organ}.tsv.gz"
+            )
+            for run in RUNS
+            for organ in RUN_PARAMS[run]["ORGANS"]
+        ]
     default_target: True

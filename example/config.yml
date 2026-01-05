@@ -1,30 +1,16 @@
 # config/config.yaml
 
-# Path to VCF file with variants to be processed
-input_vcf: tests/test.vcf
+# Runs table
+runs_table: example/example_runs_table.tsv
 
-# Directory where all intermediate outputs (e.g. feature files) will be written
-work_dir: tests/work
-
-# Directory where all final predictions will be written
-out_dir: tests/predictions
-
-# Directory where all logs will be written
-log_dir: tests/logs
-
-# Which organs to process. Override this list per-run as needed.
-# If you want to process all organs, set this to "all".
-organs:
-  - liver
-  - heart
-  - blood
-  # … add or remove organ names as needed …
+# Base directory containing runs
+base_dir: example/example_runs
 
 # Approximate memory (in MB) each organ-specific feature extraction / prediction job will require.
-memory_extract_generic_mb: 10000
-memory_extract_organsp_mb: 10000
-memory_predict_organsp_mb: 10000
-
+memory_extract_generic_mb: 1000
+memory_extract_organsp_mb: 1000
+memory_predict_organsp_mb: 1000
+gpu: 1
 
 ###---CONFIGS BELOW ARE NOT RUN-SPECIFIC. DO NOT CHANGE ONCE SET UP FOR A NEW MACHINE---###
 
@@ -41,7 +27,8 @@ organsp_dnase_sig_path: /mnt/md0/DNase_quantile/data_results/organ_sp
 
 # Resources
 organ_list_path: resources/organ_list.txt
-total_num_path: resources/total_num
+total_num_path: resources/total_num/
+organ_mapping_json: resources/organ_list_underscore_mapping.json
 
 # Directory containing pickled model files for TLand, TLand-light, and TLand-lightest
 models_path: /nfs/boylelab_turbo/rintsen/TLand_resources/models

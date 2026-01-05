@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import pickle
 import time
 import argparse
@@ -30,6 +31,7 @@ if __name__ == '__main__':
     parser.add_argument("--generic_features", help="Path to generic features file", type=str) 
     parser.add_argument("--organsp_features", help="Path to organ-specific features file", type=str)
     parser.add_argument("--organ", help="Organ name", type=str)
+    parser.add_argument('--organ_mapping_json', type=str, required=True, help='Path to file mapping organ names with underscores to organ names with spaces')
     parser.add_argument("--organ_list", help="List of organs TLand can make predictions for", type=str)
     parser.add_argument("--models_path", help="Path to directory containing model files", type=str)
     parser.add_argument("--out", help="Output file path", type=str)
@@ -37,10 +39,14 @@ if __name__ == '__main__':
 
     generic_features = Path(args.generic_features)
     organsp_features = args.organsp_features
-    organ = args.organ
     organ_list = args.organ_list
     models_path = Path(args.models_path)
     outfile = args.out
+
+    # Get organ name with spaces since that is how they are labeled in RegDB JSON and bigwig filenames
+    with open(args.organ_mapping_json, "r") as f:
+        organ_mapping = json.load(f)
+    organ = organ_mapping[args.organ]
 
     organ_ls = []
     with Path(organ_list).open() as file:
@@ -50,8 +56,8 @@ if __name__ == '__main__':
     allowed_organ_args = organ_ls.copy()
     allowed_organ_args.append("all")
     
-    if args.organ not in allowed_organ_args:
-        print(f"Error: Argument {args.organ} is not valid. Must be one of {allowed_organ_args}.")
+    if organ not in allowed_organ_args:
+        print(f"Error: Argument {organ} is not valid. Must be one of {allowed_organ_args}.")
         exit(1)
 
     tland_path = models_path / 'TLand_organSp.pickle'

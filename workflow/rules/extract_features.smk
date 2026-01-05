@@ -1,41 +1,41 @@
 import os
 from snakemake.io import directory
 
-configfile: "config/config.yaml"
-
-# Available organs from config
-ORGANS = config["organs"]
-
-# Directories
-WORK = os.path.abspath(config["work_dir"]) # Intermediate files
-OUT = config["out_dir"] # Final prediction files
-LOGS = os.path.abspath(config["log_dir"])
-
 # 1) Prep input bed file for RegulomeDB query from vcf-like file (chr, pos, id, ref, alt)
 rule prep_input_bed:
     input:
-        vcf=config["input_vcf"]
+        vcf=lambda wc: RUN_PARAMS[wc.run]["VCF"]
     output:
-        bed=WORK+"/reg_query_input.bed"
+        bed=os.path.join(
+            BASE, "{run}", "work", "reg_query_input.bed"
+        )
     shell:
         """
-        awk -F"\t" 'BEGIN{{OFS="\t"}} {{print $1, $2-1, $2}}' {input.vcf} > {output.bed}
+        awk -F"\t" 'BEGIN{{OFS="\t"}} {{print $1, $2-1, $2}}' {input.vcf} | sort | uniq > {output.bed}
         """
 
 # 2a) Query variants from the database (requires running from specific directory)
 rule query_variants:
     input:
-        bed=WORK+"/reg_query_input.bed"
+        bed=os.path.join(
+            BASE, "{run}", "work", "reg_query_input.bed"
+        )
     output:
-        jsonl=WORK+"/regdb_query_output.jsonl"
+        jsonl=os.path.join(
+            BASE, "{run}", "work", "regdb_query_output.jsonl"
+        )
     log:
-        LOGS+"/reg_query.log"
+        os.path.join(
+            BASE, "{run}", "logs", "reg_query.log"
+        )
     conda:
         "../envs/gds.yml"
+    resources:
+        queries=1
     shell:
         """
         cd {config[gds_dir]}
-        python -m utils.regulome_search_organ \
+        python -m utils.regulome_search_TLand \
             -f {input.bed} \
             --assembly GRCh38 \
             --peaks 1> {output.jsonl} 2> {log}
@@ -44,13 +44,19 @@ rule query_variants:
 # 2b) Run Sei on input VCF
 rule run_sei_vep:
     input:
-        vcf=lambda wildcards: os.path.abspath(config["input_vcf"])
+        vcf=lambda wc: RUN_PARAMS[wc.run]["VCF"]
     output:
-        outdir=directory(WORK+"/sei/sei_output")
+        outdir=temp(directory(os.path.join(
+            BASE, "{run}", "work", "sei", "sei_output"
+        )))
     log:
-        LOGS+"/run_sei_pipeline.log"
+        os.path.join(
+            BASE, "{run}", "logs", "run_sei_pipeline.log"
+        )
     conda:
         "../envs/sei.yml"
+    resources:
+        gpu=config["gpu"]
     shell:
         """
         cd {config[sei_dir]}
@@ -59,13 +65,19 @@ rule run_sei_vep:
 
 rule run_sei_seq_class:
     input:
-        vcf=config["input_vcf"],
-        vep_outdir=WORK+"/sei/sei_output",
+        vcf=lambda wc: RUN_PARAMS[wc.run]["VCF"],
+        vep_outdir=os.path.join(
+            BASE, "{run}", "work", "sei", "sei_output"
+        ),
         sei_model_dir=config["sei_dir"]+"/model"
     output:
-        features=WORK+"/sei/sei_final_output/sei_features.tsv"
+        features=os.path.join(
+            BASE, "{run}", "work", "sei", "sei_final_output", "sei_features.tsv"
+        )
     log:
-        LOGS+"/run_seq_class.log"
+        os.path.join(
+            BASE, "{run}", "logs", "run_seq_class.log"
+        )
     conda:
         "../envs/sei.yml"
     shell:
@@ -76,13 +88,21 @@ rule run_sei_seq_class:
 # 2) Extract generic features
 rule extract_generic:
     input:
-        vcf=config["input_vcf"],
-        jsonl=WORK+"/regdb_query_output.jsonl",
-        sei_features=WORK+"/sei/sei_final_output/sei_features.tsv"
+        vcf=lambda wc: RUN_PARAMS[wc.run]["VCF"],
+        jsonl=os.path.join(
+            BASE, "{run}", "work", "regdb_query_output.jsonl"
+        ),
+        sei_features=os.path.join(
+            BASE, "{run}", "work", "sei", "sei_final_output", "sei_features.tsv"
+        )
     output:
-        parquet=WORK+"/generic_features.parquet"
+        parquet=os.path.join(
+            BASE, "{run}", "work", "generic_features.parquet"
+        )
     log:
-        LOGS+"/extract_generic_features.log"
+        os.path.join(
+            BASE, "{run}", "logs", "extract_generic_features.log"
+        )
     conda:
         "../envs/TLand.yml"
     resources:
@@ -100,12 +120,18 @@ rule extract_generic:
 # 3) Extract organ-specific features in parallel
 rule extract_organsp_features:
     input:
-        jsonl=WORK+"/regdb_query_output.jsonl",
+        jsonl=os.path.join(
+            BASE, "{run}", "work", "regdb_query_output.jsonl"
+        ),
         total_num_path=config["total_num_path"]
     output:
-        parquet=WORK+"/organsp_features/{organ}_features.parquet"
+        parquet=os.path.join(
+            BASE, "{run}", "work", "organsp_features", "{organ}_features.parquet"
+        )
     log:
-        LOGS+"/extract_{organ}_features.log"
+        os.path.join(
+            BASE, "{run}", "logs", "extract_{organ}_features.log"
+        )
     conda:
         "../envs/TLand.yml"
     resources:
@@ -117,5 +143,6 @@ rule extract_organsp_features:
            --organ {wildcards.organ} \
            --organsp_dnase_sig_path {config[organsp_dnase_sig_path]} \
            --total_num_path {input.total_num_path} \
+           --organ_mapping_json {config[organ_mapping_json]} \
            --out {output.parquet} &> {log}
         """

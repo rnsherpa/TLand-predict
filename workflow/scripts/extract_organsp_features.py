@@ -96,14 +96,19 @@ if __name__=="__main__":
     parser.add_argument("--organ", help="Organ name", type=str) 
     parser.add_argument('--organsp_dnase_sig_path', type=str, required=True, help='Path to quantile-normalized organ-specific DNase signal bigWig files')
     parser.add_argument('--total_num_path', type=str, required=True, help='Path to files containing total number of organ-specific annotations for a given feature')
+    parser.add_argument('--organ_mapping_json', type=str, required=True, help='Path to file mapping organ names with underscores to organ names with spaces')
     parser.add_argument('--out', type=str, required=True, help='Output file path')
     args = parser.parse_args()
 
     input_jsonl = args.input_jsonl
-    organ = args.organ
     organsp_dnase_sig_path = Path(args.organsp_dnase_sig_path)
     total_num_path = Path(args.total_num_path)
     outfile = args.out
+
+    # Get organ name with spaces since that is how they are labeled in RegDB JSON and bigwig filenames
+    with open(args.organ_mapping_json, "r") as f:
+        organ_mapping = json.load(f)
+    organ = organ_mapping[args.organ]
 
     total_num_dict={}
     for feature in ['DNASE', 'TF', 'CTCF', 'H3K27ac', 'H3K36me3', 'H3K4me1', 'H3K4me3', 'H3K27me3']:
