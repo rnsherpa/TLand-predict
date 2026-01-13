@@ -1,0 +1,63 @@
+blood	476
+bodily fluid	476
+brain	245
+epithelium	119
+kidney	88
+musculature of body	85
+lung	83
+intestine	74
+connective tissue	70
+skin of body	64
+heart	62
+limb	62
+large intestine	55
+endocrine gland	53
+colon	41
+exocrine gland	37
+extraembryonic component	37
+bone element	36
+vasculature	35
+blood vessel	32
+embryo	28
+placenta	28
+bone marrow	26
+pancreas	22
+stomach	22
+mammary gland	19
+arterial blood vessel	18
+penis	18
+liver	17
+adrenal gland	16
+immune organ	16
+gonad	15
+small intestine	13
+thymus	13
+uterus	12
+eye	11
+ovary	10
+spinal cord	10
+prostate gland	9
+spleen	9
+ureter	9
+lymphoid tissue	8
+thyroid gland	8
+nerve	6
+esophagus	5
+mouth	5
+skeleton	5
+testis	5
+adipose tissue	4
+lymph node	4
+skin of prepuce of penis	4
+breast	3
+vein	3
+bronchus	2
+lymphatic vessel	2
+pericardium	2
+tongue	2
+vagina	2
+ear	1
+gallbladder	1
+nose	1
+trachea	1
+urinary bladder	1
