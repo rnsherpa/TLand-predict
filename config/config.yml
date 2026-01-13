@@ -1,30 +1,27 @@
-# config/config.yaml
-
 # Runs table
-runs_table: .
+runs_table: /path/to/your/runs_table.tsv
 
 # Base directory containing runs
-base_dir: .
+base_dir: /path/to/your/runs
 
 # Approximate memory (in MB) each organ-specific feature extraction / prediction job will require.
-memory_extract_generic_mb: 10000
-memory_extract_organsp_mb: 10000
-memory_predict_organsp_mb: 10000
+memory_extract_generic_mb: 1000
+memory_extract_organsp_mb: 1000
+memory_predict_organsp_mb: 1000
 gpu: 1
-
 
 ###---CONFIGS BELOW ARE NOT RUN-SPECIFIC. DO NOT CHANGE ONCE SET UP FOR A NEW MACHINE---###
 
 # Directory from which regulome_search_organ.py must be run
-gds_dir: /mnt/md0/genomic-data-service
+gds_dir: /path/to/genomic-data-service
 
 # Directory from which run_sei.py must be run
-sei_dir: /nfs/boylelab_turbo/rintsen/Sei
+sei_dir: /path/to/Sei
 
 # Path to bigwigs
-dnase_sig_path: /mnt/md0/DNase_quantile/data_results/all
-chip_sig_path: /mnt/md0/ChIP_quantile/data_results
-organsp_dnase_sig_path: /mnt/md0/DNase_quantile/data_results/organ_sp
+dnase_sig_path: /path/to/generic_dnase_sig
+chip_sig_path: /path/to/chip_sig
+organsp_dnase_sig_path: /path/to/organsp_dnase_sig
 
 # Resources
 organ_list_path: resources/organ_list.txt
@@ -32,4 +29,4 @@ total_num_path: resources/total_num/
 organ_mapping_json: resources/organ_list_underscore_mapping.json
 
 # Directory containing pickled model files for TLand, TLand-light, and TLand-lightest
-models_path: /nfs/boylelab_turbo/rintsen/TLand_resources/models
+models_path: /path/to/models
