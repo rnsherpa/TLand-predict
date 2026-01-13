@@ -1,6 +1,6 @@
 results/**
-resources/**
 logs/**
+clover_config/
 .snakemake
 .snakemake/**
 example/all_organs/**
