@@ -85,7 +85,7 @@ if __name__ == '__main__':
     print(f'Predicting TLand scores for {organ}...')
     
     df_all, pred_dict = predict(organ, generic_features, organsp_features, gt_100_tf_chip, model_ls)
-    output_df = df_all[['chrom', 'end', 'ref', 'alt']].copy()
+    output_df = df_all[['chrom', 'end', 'id', 'ref', 'alt']].copy()
     if organ in gt_100_tf_chip:
         output_df[organ+"_"+model_ls[0][0]] = pred_dict[organ][model_ls[0][0]][0]
     else:
