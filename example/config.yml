@@ -9,6 +9,7 @@ memory_extract_generic_mb: 1000
 memory_extract_organsp_mb: 1000
 memory_predict_organsp_mb: 1000
 gpu: 1
+all_TLand_models: False
 
 ###---CONFIGS BELOW ARE NOT RUN-SPECIFIC. DO NOT CHANGE ONCE SET UP FOR A NEW MACHINE---###
 
