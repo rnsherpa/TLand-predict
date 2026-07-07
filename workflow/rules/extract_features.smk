@@ -31,7 +31,8 @@ rule query_variants:
     conda:
         "../envs/gds.yml"
     resources:
-        queries=1
+        queries=1,
+        exclusive_lock=1
     shell:
         """
         cd {config[gds_dir]}
@@ -56,7 +57,8 @@ rule run_sei_vep:
     conda:
         "../envs/sei.yml"
     resources:
-        gpu=config["gpu"]
+        gpu=config["gpu"],
+        exclusive_lock=1
     shell:
         """
         cd {config[sei_dir]}
@@ -81,7 +83,8 @@ rule run_sei_seq_class:
     conda:
         "../envs/sei.yml"
     resources:
-        mem_mb=config["memory_sei_seq_class_mb"]
+        mem_mb=config["memory_sei_seq_class_mb"],
+        exclusive_lock=1
     shell:
         """
         python workflow/scripts/run_seq_class.py -s {input.vep_outdir} -i {input.vcf} -m {input.sei_model_dir} -o {output.features} &> {log}
